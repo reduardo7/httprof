@@ -1,0 +1,162 @@
+<html>
+
+<head>
+<title>Summary of $pcap_file_name</title>
+<style>
+body {
+      background: #ffe;
+      font-family: calibri, helvetica, arial, sans-serif;
+      line-height: 140%;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Summary of $pcap_file_name</h1>
+
+<p>Summary generated on $summary_date from a packet trace taken on
+$pcap_date.</p>
+
+#set $time_elapsed = "%0.2f" % $time_elapsed
+#set $link_overhead = "%0.2f" % $link_overhead
+#set $network_overhead = "%0.2f" % $network_overhead
+
+<p><strong><big>${time_elapsed} seconds</big></strong> to send
+<strong><big>$packet_summary.frame_bytes bytes</big></strong> in
+<strong><big>$packet_summary.packets packets</big></strong><br />
+
+${link_overhead}% overhead at the link layer
+($packet_summary.application_bytes / $packet_summary.frame_bytes) <br />
+
+${network_overhead}% overhead at the network layer
+($packet_summary.application_bytes / $packet_summary.ip_bytes)</p>
+
+
+<p><strong><big>$unique_hosts_count unique hosts:</big></strong>
+#for $h in $packet_summary.unique_hosts
+$h&nbsp; 
+#end for
+</p>
+
+<p><strong>$unique_ports_count unique ports (<big>$connections_count unique
+transport layer connections</big>):</strong>
+#for $p in $packet_summary.unique_ports
+$p&nbsp; 
+#end for
+</p>
+
+
+<h2>HTTP Connection Summary</h2>
+
+<style>
+th.http_summary, td.http_summary { text-align: left; vertical-align: baseline; }
+td.http_summary_alt { text-align: left; vertical-align: baseline; background: #eec}
+</style>
+
+<table cellspacing="0" cellpadding="7" border="0">
+<tr>
+<th class="http_summary">Connection</th>
+<th class="http_summary">Requests and Responses</th>
+</tr>
+
+#set $i = 0
+#for $c in $summarized_connections:
+<tr>
+#if $i % 2 == 0
+    #set $cls = "http_summary"
+#else
+    #set $cls = "http_summary_alt"
+#end if
+<td class="$cls">$c.id<br />$c.length&nbsp;bytes</td>
+<td class="$cls">
+#for $s in $c.summary
+$s.replace("<", "&lt;")<br />
+#end for
+</td></tr>
+#set $i = $i + 1
+#end for
+</table>
+
+
+<!--
+<p><strong>Average latency per connection:</strong>
+<ul>
+#for $a in $average_latencies
+#set $avrg = "%0.3f" % $a.average
+<li>$a.port: ${avrg} seconds ($a.bytes bytes total)</li>
+#end for
+</ul>
+
+#set $latency_average = "%0.3f" % $latency_average
+<p>Average of averages: ${latency_average} seconds</p>
+-->
+
+
+<h2>Grisly Packet Details</h2>
+
+<style>
+th, td { text-align: right; vertical-align: baseline; }
+td.alt { text-align: right; vertical-align: baseline; background: #eec}
+</style>
+
+<table cellspacing="0" cellpadding="7" border="0">
+
+<tr>
+<th>Packet</th>
+<th>Time</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Network</th>
+<th>Transport</th>
+<th>Application</th>
+<th>Link</th>
+</tr>
+
+<!--
+<tr>
+<td colspan="8"><hr size="1" noshade /></td>
+</tr>
+-->
+
+#set $i = 0
+#for $s in $synopses
+#if $i % 2 == 0
+    #set $cls = ""
+#else
+    #set $cls = "alt"
+#end if
+<tr>
+<td class="$cls">$s.packet</td>
+<td class="$cls">$s.relative_timestamp</td>
+<td class="$cls">$s.source_host:$s.source_port</td>
+<td class="$cls">$s.destination_host:$s.destination_port</td>
+<td class="$cls">$s.ip_bytes</td>
+<td class="$cls">$s.transport_bytes</td>
+<td class="$cls">$s.application_bytes</td>
+<td class="$cls">$s.frame_bytes</td>
+</tr>
+#set $i = $i + 1
+#end for
+
+<tr>
+<td colspan="8"><hr size="1" noshade /></td>
+</tr>
+
+<tr>
+<th>&nbsp;</th>
+<th>&nbsp;</th>
+<th>&nbsp;</th>
+<th>Total bytes:</th>
+<th>$packet_summary.ip_bytes</th>
+<th>$packet_summary.transport_bytes</thh
+<th>$packet_summary.application_bytes</th>
+<th>$packet_summary.frame_bytes</th>
+</tr>
+
+</table>
+
+</body>
+
+</html>
+
