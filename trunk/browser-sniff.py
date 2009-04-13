@@ -60,6 +60,9 @@ import subprocess
 import sys
 from time import time, sleep
 
+if "win32" == sys.platform:
+      import win32process
+
 
 TCPDUMP = "tcpdump"
 TSHARK = "tshark"
@@ -78,7 +81,21 @@ def usage():
             p = os.popen(TCPDUMP + " -D").read()
       sys.stderr.write(p + "\n")
       sys.exit(1)
+
+
+def get_program_name_and_arguments(command_line):
+      cmnd = command_line.lower()
+      try:
+            i = cmnd.index(".exe") + 4
+      except ValueError, e:
+            sys.stderr.write("Sorry, Windows command lines must begin with a program name that ends with '.exe.'\n")
+            sys.exit(1)
+
+      cmnd = command_line[:i].strip('"')
+      b = os.path.basename(cmnd)
+      return cmnd, b + " " + command_line[i+1:]
  
+
 def launch(browser, device, pcap_filter, timeout, output):
 
       """Launches browser and sniffs device (with pcap_filter, if any) for
@@ -94,9 +111,15 @@ output."""
 
       rtrn = None
       if "win32" == sys.platform:
-            subprocess.call("cmd.exe /c start cmd.exe /c " + tshrk, creationflags=0x10)
-            # Give Windows a little time to launch tshark:
-            sleep(5)
+            cmnd, rgmnts = get_program_name_and_arguments(browser)
+            print "cmnd:", cmnd
+            print "rgmnts:", rgmnts
+            subprocess.Popen("cmd.exe /c start cmd.exe /c " + tshrk, creationflags=0x8)
+            # Give tshark a chance to start up.
+            sleep(3)
+            s = win32process.STARTUPINFO()
+            p, t, pid, tid = win32process.CreateProcess(cmnd, rgmnts, None, None, 0, 0, None, "\\" , s)
+            
       else:
             tshrk += " &"
             tcpdmp += " &"
@@ -113,7 +136,7 @@ output."""
                   sys.stderr.write("Could not execute tshark. Trying tcpdump...\n")
                   os.system(tcpdmp)
 
-      os.system(browser)
+            os.system(browser)
 
 
 if __name__ == "__main__":
