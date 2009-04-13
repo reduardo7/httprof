@@ -61,6 +61,11 @@ On FreeBSD, install the net/wireshark port. If browser-sniff.py can't find
 tshark, it will try to use tcpdump, which is available in the base install
 of Mac OS X.
 
+On Windows, you will need the PyWin32 module for browser-sniff.py to work.
+It is available at:
+
+      http://sourceforge.net/projects/pywin32/
+
 summarize_pcap.py also depends on the Cheetah templating library. On
 FreeBSD, install the devel/py-cheetah port. For Windows, you can download
 Cheetah at:
