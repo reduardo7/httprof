@@ -7,7 +7,7 @@ from reassemble_tcp import ethernet_frames, ip_datagrams, tcp_streams
 
 REQUEST_MATCHER = re.compile(r"^(GET|PUT|POST|HEAD|DELETE|PROPFIND|TRACE|OPTIONS|CONNECT)\s+.*$",
                              re.IGNORECASE|re.MULTILINE)
-RESPONSE_MATCHER = re.compile(r"^HTTP/\d\.?\d? [1-5]\d{2}.+$",
+RESPONSE_MATCHER = re.compile(r"^HTTP/\d?\.?\d? [1-5]\d{2}.+$",
                               re.IGNORECASE|re.MULTILINE)
 
 REQUEST_RESPONSE_MATCHER = re.compile(r"((GET|PUT|POST|HEAD|DELETE|PROPFIND|TRACE|OPTIONS|CONNECT)\s+.*HTTP/\d?\.?\d?)|(HTTP/\d?\.?\d? [1-5]\d{2}.+)$",
@@ -15,7 +15,12 @@ REQUEST_RESPONSE_MATCHER = re.compile(r"((GET|PUT|POST|HEAD|DELETE|PROPFIND|TRAC
 
 
 def summarize_http_connection(stream):
-      return [ m.group() for m in REQUEST_RESPONSE_MATCHER.finditer(stream) ]
+
+      """stream: A stream of bytes, from either direction of a TCP
+connection. Returns an array of regular expression match objects from
+REQUEST_RESPONSE_MATCHER for each request or response found in stream."""
+
+      return [ m for m in REQUEST_RESPONSE_MATCHER.finditer(stream) ]
 
 
 if __name__ == "__main__":
@@ -42,5 +47,5 @@ if __name__ == "__main__":
             #for m in REQUEST_RESPONSE_MATCHER.finditer(strms[s]):
             #      print m.group()
 
-            print summarize_http_connection(strms[s])
+            print [ m.group() for m in summarize_http_connection(strms[s]) ]
 
