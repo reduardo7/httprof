@@ -233,7 +233,7 @@ if __name__ == "__main__":
             for c in pkt_smry.connections:
                   s = "".join(pkt_smry.connections[c])
                   l = len(s)
-                  s = summarize_http_connection(s)
+                  s = [ m.group() for m in summarize_http_connection(s) ]
                   if not s:
                         continue
                   smrzd_cnctns.append( { "id": c, "summary": s, "length": l } )
