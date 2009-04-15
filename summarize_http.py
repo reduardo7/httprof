@@ -10,7 +10,7 @@ REQUEST_MATCHER = re.compile(r"^(GET|PUT|POST|HEAD|DELETE|PROPFIND|TRACE|OPTIONS
 RESPONSE_MATCHER = re.compile(r"^HTTP/\d\.?\d? [1-5]\d{2}.+$",
                               re.IGNORECASE|re.MULTILINE)
 
-REQUEST_RESPONSE_MATCHER = re.compile(r"((GET|PUT|POST|HEAD|DELETE|PROPFIND|TRACE|OPTIONS|CONNECT)\s+.*)|(HTTP/\d\.?\d? [1-5]\d{2}.+)$",
+REQUEST_RESPONSE_MATCHER = re.compile(r"((GET|PUT|POST|HEAD|DELETE|PROPFIND|TRACE|OPTIONS|CONNECT)\s+.*HTTP/\d?\.?\d?)|(HTTP/\d?\.?\d? [1-5]\d{2}.+)$",
                                       re.IGNORECASE|re.MULTILINE)
 
 
