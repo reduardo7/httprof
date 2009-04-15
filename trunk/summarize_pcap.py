@@ -21,6 +21,7 @@ version 2. See the file COPYING.txt. Written by Chris Palmer
 
 
 from Cheetah.Template import Template
+from decimal import Decimal
 from PcapReader import PcapReader
 from socket import gethostbyname as resolve
 import sys
@@ -49,7 +50,7 @@ def average_delta(numbers):
       """Given a sequence of numbers, returns the average delta between
 subsequent numbers."""
 
-      return sum(deltas(numbers)) / float(len(numbers) - 1)
+      return float(sum(deltas(numbers))) / float(len(numbers) - 1)
 
 
 class PacketSynopsis:
@@ -84,7 +85,11 @@ empty sequence; similarly for hosts."""
                   if hosts and (src not in hosts) and (dstntn not in hosts):
                         continue
 
-                  yield PacketSynopsis(timestamp=m[0] + m[1] / 1000000.0,
+                  # This bit of cheese with Decimal is an attempt to avoid
+                  # floating-point rounding errors, to maintain the same
+                  # timestamps as found when you look at the pcap in
+                  # Wireshark. It appears to work so far.
+                  yield PacketSynopsis(timestamp=Decimal("%d.%06d" % m[:2]),
                           source_host=src,
                           source_port=t.sport,
                           destination_host=dstntn,
