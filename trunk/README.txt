@@ -41,7 +41,8 @@ site:
 
       http://www.python.org/
 
-On FreeBSD, install the lang/python port.
+On FreeBSD, install the lang/python port. On Ubuntu, install the python2.6
+and python2.6-dev packages.
 
 Libraries and Other Dependencies
 --------------------------------
@@ -50,7 +51,12 @@ You will need the dpkt Python module, available for all platforms at:
 
       http://code.google.com/p/dpkt/
 
-On FreeBSD, install the net/py-dpkt port.
+On FreeBSD, install the net/py-dpkt port. There is no Ubuntu package.  For
+Ubuntu, download the code from the above URL and run "sudo python setup.py
+install".  You may run into a known bug, which is that this code uses the
+name "as" as an object field name. In recent versions of Python, "as" is now
+a reserved keyword. To solve this problem, edit dpkt/bgp.py and change the
+field name to "aS". In dpkt 1.6, ".as" occurs on lines 678 and 715.
 
 browser-sniff.py uses the tshark program, which comes with Wireshark.
 Wireshark is available for all platforms and is available at:
@@ -59,7 +65,7 @@ Wireshark is available for all platforms and is available at:
 
 On FreeBSD, install the net/wireshark port. If browser-sniff.py can't find
 tshark, it will try to use tcpdump, which is available in the base install
-of Mac OS X.
+of Mac OS X. On Ubuntu, install the wireshark and tshark packages.
 
 On Windows, you will need the PyWin32 module for browser-sniff.py to work.
 It is available at:
@@ -71,6 +77,10 @@ FreeBSD, install the devel/py-cheetah port. For Windows, you can download
 Cheetah at:
 
       http://www.cheetahtemplate.org/download.html
+
+On Ubuntu, download the code and run "sudo python setup.py install". You may
+find that it wants to compile C code; if you don't already have the compiler
+installed, install the build-essential package.
 
 For best results, you will want to have at least one HTTP client. :)
 
